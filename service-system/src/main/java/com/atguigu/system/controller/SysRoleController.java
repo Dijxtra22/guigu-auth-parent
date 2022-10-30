@@ -2,7 +2,10 @@ package com.atguigu.system.controller;
 
 import com.atguigu.common.result.Result;
 import com.atguigu.model.system.SysRole;
+import com.atguigu.model.vo.SysRoleQueryVo;
 import com.atguigu.system.service.SysRoleService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,17 @@ public class SysRoleController {
     public Result removeRole(@PathVariable Long id){
         boolean isSuccess = sysRoleService.removeById(id);
         return isSuccess ? Result.ok() : Result.fail();
+    }
+
+    @ApiOperation(value = "获取分页列表")
+    @GetMapping("/{page}/{limit}")
+    public Result index(
+            @PathVariable Long page,
+            @PathVariable Long limit,
+            SysRoleQueryVo roleQueryVo) {
+        Page<SysRole> pageParam = new Page<>(page, limit);
+        IPage<SysRole> pageModel = sysRoleService.selectPage(pageParam, roleQueryVo);
+        return Result.ok(pageModel);
     }
 
 
