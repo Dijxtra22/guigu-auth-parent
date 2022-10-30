@@ -1,4 +1,4 @@
-package com.atguigu.service;
+package com.atguigu.system;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
