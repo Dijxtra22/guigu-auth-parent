@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Api(tags = "角色管理")
 @RestController
@@ -45,6 +46,36 @@ public class SysRoleController {
         IPage<SysRole> pageModel = sysRoleService.selectPage(pageParam, roleQueryVo);
         return Result.ok(pageModel);
     }
+
+    @ApiOperation(value = "添加角色")
+    @PostMapping("/save")
+    public Result save(@RequestBody SysRole sysRole){
+        boolean isSuccess = sysRoleService.save(sysRole);
+        return isSuccess ? Result.ok() : Result.fail();
+    }
+
+    @ApiOperation(value = "根据id查询")
+    @GetMapping("/get/{id}")
+    public Result get(@PathVariable Long id){
+        SysRole role = sysRoleService.getById(id);
+        return Objects.isNull(role) ? Result.fail() : Result.ok(role);
+    }
+
+    @ApiOperation(value = "修改角色")
+    @PutMapping("/update")
+    public Result updateById(@RequestBody SysRole role) {
+        boolean isSuccess = sysRoleService.updateById(role);
+        return isSuccess ? Result.ok() : Result.fail();
+    }
+
+    @ApiOperation(value = "批量删除")
+    @DeleteMapping("/batchRemove")
+    public Result batchRemove(@RequestBody List<Long> idList) {
+        boolean isSuccess = sysRoleService.removeByIds(idList);
+        return isSuccess ? Result.ok() : Result.fail();
+    }
+
+
 
 
 
