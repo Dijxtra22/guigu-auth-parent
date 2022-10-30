@@ -35,7 +35,7 @@ public class SysRoleServiceTest {
     @Test
     public void testUpdateById(){
         SysRole sysRole = new SysRole();
-        sysRole.setId(String.valueOf(1586564425792233473L));
+        sysRole.setId(1586564425792233473L);
         sysRole.setRoleName("角色管理员test1111");
 
         boolean result = sysRoleService.updateById(sysRole);

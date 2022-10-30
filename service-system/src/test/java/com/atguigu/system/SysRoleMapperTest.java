@@ -35,7 +35,7 @@ public class SysRoleMapperTest {
     @Test
     public void testUpdateById(){
         SysRole sysRole = new SysRole();
-        sysRole.setId(String.valueOf(1586544478076751874L));
+        sysRole.setId(1586544478076751874L);
         sysRole.setRoleName("测试角色11111");
 
         int result = sysRoleMapper.updateById(sysRole);
