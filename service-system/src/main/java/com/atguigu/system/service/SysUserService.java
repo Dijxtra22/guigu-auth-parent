@@ -1,6 +1,6 @@
 package com.atguigu.system.service;
 
-import com.atguigu.system.entity.SysUser;
+import com.atguigu.model.system.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

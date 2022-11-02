@@ -1,6 +1,6 @@
 package com.atguigu.system.service.impl;
 
-import com.atguigu.system.entity.SysUser;
+import com.atguigu.model.system.SysUser;
 import com.atguigu.system.mapper.SysUserMapper;
 import com.atguigu.system.service.SysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
