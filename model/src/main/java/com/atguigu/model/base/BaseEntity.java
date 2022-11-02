@@ -1,9 +1,6 @@
 package com.atguigu.model.base;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,7 +17,7 @@ public class BaseEntity implements Serializable {
     @TableField("create_time")
     private Date createTime;
 
-    @TableField("update_time")
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
     @TableLogic  //逻辑删除 默认效果 0 没有删除 1 已经删除
