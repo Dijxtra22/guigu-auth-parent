@@ -74,5 +74,13 @@ public class SysUserController {
         boolean isSuccess = sysUserService.removeByIds(idList);
         return isSuccess ? Result.ok() : Result.fail();
     }
+
+    @ApiOperation("更改用户状态")
+    @GetMapping("updateStatus/{id}/{status}")
+    public Result updateStatus(@PathVariable String id,
+                               @PathVariable Integer status){
+        sysUserService.updateStatus(id, status);
+        return Result.ok();
+    }
 }
 
