@@ -2,6 +2,7 @@ package com.atguigu.system.controller;
 
 import com.atguigu.common.result.Result;
 import com.atguigu.model.system.SysRole;
+import com.atguigu.model.vo.AssginRoleVo;
 import com.atguigu.model.vo.SysRoleQueryVo;
 import com.atguigu.system.service.SysRoleService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Api(tags = "角色管理")
@@ -75,6 +77,19 @@ public class SysRoleController {
         return isSuccess ? Result.ok() : Result.fail();
     }
 
+    @ApiOperation(value = "根据用户获取角色数据")
+    @GetMapping("/toAssign/{userId}")
+    public Result toAssign(@PathVariable Long userId) {
+        Map<String, Object> roleMap = sysRoleService.getRolesByUserId(userId);
+        return Result.ok(roleMap);
+    }
+
+    @ApiOperation(value = "根据用户分配角色")
+    @PostMapping("/doAssign")
+    public Result doAssign(@RequestBody AssginRoleVo assginRoleVo) {
+        sysRoleService.doAssign(assginRoleVo);
+        return Result.ok();
+    }
 
 
 
