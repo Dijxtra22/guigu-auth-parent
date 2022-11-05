@@ -1,15 +1,21 @@
 package com.atguigu.system.service.impl;
 
 import com.atguigu.model.system.SysMenu;
+import com.atguigu.model.system.SysRoleMenu;
+import com.atguigu.model.vo.AssginMenuVo;
 import com.atguigu.system.exception.GuiguException;
 import com.atguigu.system.mapper.SysMenuMapper;
+import com.atguigu.system.mapper.SysRoleMenuMapper;
 import com.atguigu.system.service.SysMenuService;
 import com.atguigu.system.utils.MenuHelper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -21,6 +27,9 @@ import java.util.List;
  */
 @Service
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
+
+    @Autowired
+    private SysRoleMenuMapper sysRoleMenuMapper;
 
     @Override
     public List<SysMenu> findNodes() {
@@ -38,5 +47,44 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             throw new GuiguException(201, "请先删除子菜单");
         }
         baseMapper.deleteById(id);
+    }
+
+    @Override
+    public List<SysMenu> findSysMenuByRoleId(final String roleId) {
+        // 获取所有菜单 status=1
+        QueryWrapper<SysMenu> menuWrapper = new QueryWrapper<>();
+        menuWrapper.eq("status", 1);
+        List<SysMenu> menuList = baseMapper.selectList(menuWrapper);
+
+        // 根据roleId查询 角色分配过的菜单列表
+        QueryWrapper<SysRoleMenu> roleMenuWrapper = new QueryWrapper<>();
+        roleMenuWrapper.eq("role_id", roleId);
+        List<SysRoleMenu> roleMenus = sysRoleMenuMapper.selectList(roleMenuWrapper);
+
+        // 从菜单列表中获取角色分配所有菜单id
+        Set<String> menuIdSet = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toSet());
+
+        // 数据处理 isSelect 如果菜单选中true，否则false
+        menuList.forEach(menu -> menu.setSelect(menuIdSet.contains(menu.getId())));
+
+        // 转换成树形结构
+        return MenuHelper.buildTree(menuList);
+    }
+
+    @Override
+    public void doAssign(AssginMenuVo assginMenuVo) {
+        //删除已分配的权限
+        sysRoleMenuMapper.delete(new QueryWrapper<SysRoleMenu>().eq("role_id",assginMenuVo.getRoleId()));
+        //遍历所有已选择的权限id
+        for (String menuId : assginMenuVo.getMenuIdList()) {
+            if(menuId != null){
+                //创建SysRoleMenu对象
+                SysRoleMenu sysRoleMenu = new SysRoleMenu();
+                sysRoleMenu.setMenuId(menuId);
+                sysRoleMenu.setRoleId(assginMenuVo.getRoleId());
+                //添加新权限
+                sysRoleMenuMapper.insert(sysRoleMenu);
+            }
+        }
     }
 }
