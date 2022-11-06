@@ -3,11 +3,13 @@ package com.atguigu.system.service.impl;
 import com.atguigu.model.system.SysMenu;
 import com.atguigu.model.system.SysRoleMenu;
 import com.atguigu.model.vo.AssginMenuVo;
+import com.atguigu.model.vo.RouterVo;
 import com.atguigu.system.exception.GuiguException;
 import com.atguigu.system.mapper.SysMenuMapper;
 import com.atguigu.system.mapper.SysRoleMenuMapper;
 import com.atguigu.system.service.SysMenuService;
 import com.atguigu.system.utils.MenuHelper;
+import com.atguigu.system.utils.RouterHelper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,5 +88,35 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 sysRoleMenuMapper.insert(sysRoleMenu);
             }
         }
+    }
+
+    @Override
+    public List<RouterVo> getUserMenuList(final String userId) {
+        //超级管理员admin账号id为：1
+        List<SysMenu> sysMenuList = null;
+        if ("1".equals(userId)) {
+            sysMenuList = baseMapper.selectList(new QueryWrapper<SysMenu>().eq("status", 1).orderByAsc("sort_value"));
+        } else {
+            sysMenuList = baseMapper.findMenuListByUserId(userId);
+        }
+        //构建树形数据
+        List<SysMenu> sysMenuTreeList = MenuHelper.buildTree(sysMenuList);
+
+        //构建路由
+        List<RouterVo> routerVoList = RouterHelper.buildRouters(sysMenuTreeList);
+        return routerVoList;
+    }
+
+    @Override
+    public List<String> getUserButtonList(final String userId) {
+        //超级管理员admin账号id为：1
+        List<SysMenu> sysMenuList = null;
+        if ("1".equals(userId)) {
+            sysMenuList = baseMapper.selectList(new QueryWrapper<SysMenu>().eq("status", 1).orderByAsc("sort_value"));
+        } else {
+            sysMenuList = baseMapper.findMenuListByUserId(userId);
+        }
+        List<String> permissionList = sysMenuList.stream().filter(sysMenu -> sysMenu.getType() == 2).map(SysMenu::getPerms).collect(Collectors.toList());
+        return permissionList;
     }
 }
