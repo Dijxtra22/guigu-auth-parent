@@ -1,10 +1,13 @@
 package com.atguigu.system.filter;
 
+import com.alibaba.fastjson.JSON;
 import com.atguigu.common.result.Result;
 import com.atguigu.common.result.ResultCodeEnum;
 import com.atguigu.common.utils.JwtHelper;
 import com.atguigu.common.utils.ResponseUtil;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -15,6 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -23,7 +29,10 @@ import java.util.Collections;
  */
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-    public TokenAuthenticationFilter() {
+    private RedisTemplate redisTemplate;
+
+    public TokenAuthenticationFilter(RedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
 
     }
 
@@ -54,7 +63,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             String useruame = JwtHelper.getUsername(token);
             logger.info("useruame:"+useruame);
             if (!StringUtils.isEmpty(useruame)) {
-                return new UsernamePasswordAuthenticationToken(useruame, null, Collections.emptyList());
+                //redis 先获取
+                String authoritiesStr = ((String) redisTemplate.opsForValue().get(useruame));
+                List<Map> maps = JSON.parseArray(authoritiesStr, Map.class);
+                assert maps != null;
+                List<SimpleGrantedAuthority> authorities = maps.stream().map(m -> new SimpleGrantedAuthority((String) m.get("authority"))).collect(Collectors.toList());
+                return new UsernamePasswordAuthenticationToken(useruame, null, authorities);
             }
         }
         return null;
