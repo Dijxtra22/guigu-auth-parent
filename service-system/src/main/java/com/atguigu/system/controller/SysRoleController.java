@@ -4,6 +4,8 @@ import com.atguigu.common.result.Result;
 import com.atguigu.model.system.SysRole;
 import com.atguigu.model.vo.AssginRoleVo;
 import com.atguigu.model.vo.SysRoleQueryVo;
+import com.atguigu.system.annotation.Log;
+import com.atguigu.system.enums.BusinessType;
 import com.atguigu.system.service.SysRoleService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,6 +27,7 @@ public class SysRoleController {
     @Autowired
     private SysRoleService sysRoleService;
 
+    @Log(title = "获取全部角色列表", businessType = BusinessType.OTHER)
     @ApiOperation(value = "获取全部角色列表")
     @GetMapping("findAll")
     public Result findAll(){

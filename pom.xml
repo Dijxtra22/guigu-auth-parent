@@ -17,6 +17,7 @@
         <module>common/service-util</module>
         <module>common/common-util</module>
         <module>common/spring-security</module>
+        <module>common/common-log</module>
     </modules>
 
     <properties>
